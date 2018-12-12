@@ -15,8 +15,8 @@ sid = '250201232'
 driver = '/usr/lib/chromium-browser/chromedriver'
 s = Session(webdriver_path=driver,
             browser='chrome',
-            default_timeout=15)
-#            webdriver_options={'arguments': ['headless']})
+            default_timeout=15,
+            webdriver_options={'arguments': ['headless']})
 
 def download_xlsx(s, username, passwd, sid, download_path=None):
     """Export data from www.brand24.com website as xlsx file (Excel) to
