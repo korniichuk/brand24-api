@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Version 0.1a1
+# Version 0.1a2
 
 import os
 import time
+from urlparse import urljoin, urlparse
 
+from bs4 import BeautifulSoup
 from fbi import getpassword
 from requestium import Session
 
@@ -17,6 +19,59 @@ s = Session(webdriver_path=driver,
             browser='chrome',
             default_timeout=15,
             webdriver_options={'arguments': ['headless']})
+
+def get_top_mention(s, username, passwd, sid):
+
+    domain = 'https://app.brand24.com'
+    result = {}
+
+    s = login(s, username, passwd)
+    url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
+    s.driver.get(url)
+    time.sleep(5)
+    soap = BeautifulSoup(s.driver.page_source, 'lxml')
+    # Parse 'text'
+    class_ = 'mention most-interactive-entry-from-social-media'
+    text = soap.find('div', class_=class_).find('div', class_='mention_text') \
+               .text
+    result['text'] = text
+    # Parse 'title'
+    title = soap.find('div', class_=class_) \
+                .find('div', class_='mention_title').a.text
+    result['title'] = title
+    # Parse 'avatar'
+    avatar = soap.find('div', class_=class_) \
+                 .find('div', class_='mention_avatar').a.img['src']
+    if not avatar.startswith('http'):
+        avatar = urljoin(domain, avatar)
+    result['avatar'] = avatar
+    # Parse 'source'
+    source = soap.find('div', class_=class_) \
+                 .find('div', class_='mention_meta') \
+                 .find('span', class_='mention_source').text
+    result['source'] = source
+    # Parse 'url' and 'id'
+    path = soap.find('div', class_=class_).find('div', class_='mention_meta') \
+               .find('span', class_='mention_source').a['href']
+    url = urljoin(domain, path)
+    result['url'] = url
+    id_ = urlparse(path).query.split('&')[0].replace('id=', '').strip()
+    result['id'] = id_
+    # Parse 'date' and 'time'
+    d, t = soap.find('div', class_=class_) \
+               .find('div', class_='mention_meta') \
+               .find('span', class_='mention_date').text.split()
+    result['date'] = d
+    result['time'] = t
+    # Parse 'influencer_score'
+    spans = soap.find('div', class_=class_).find('div', class_='mention_meta') \
+                .find_all('span')
+    for span in spans:
+        if 'Influencer Score:' in span.text:
+            influencer_score = span.text.split()[-1].replace('/10', '')
+            break
+    result['influencer_score'] = influencer_score
+    return result
 
 def download_xlsx(s, username, passwd, sid, download_path=None):
     """Export data from www.brand24.com website as xlsx file (Excel) to
@@ -63,7 +118,7 @@ def login(s, username, passwd):
     s.driver.ensure_element_by_name('login').send_keys(username)
     s.driver.ensure_element_by_name('password').send_keys(passwd)
     s.driver.ensure_element_by_id('login_button').click()
-    time.sleep(3)
+    time.sleep(5)
     return s
 
 # Example. Export data from www.brand24.com website as xlsx file (Excel) to
@@ -73,3 +128,6 @@ def login(s, username, passwd):
 # Example. Export data from www.brand24.com website as xlsx file (Excel) to
 # '/tmp' directory
 #download_xlsx(s, username, passwd, sid, download_path='/tmp')
+
+# Example. Get top mention from www.brand24.com website as Python dict
+#top_mention = get_top_mention(s, username, passwd, sid)
