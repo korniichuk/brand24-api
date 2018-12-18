@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Version 0.1a3
+# Version 0.1a4
 
 import os
 import time
@@ -137,6 +137,24 @@ def parser(soap):
             influencer_score = span.text.split()[-1].replace('/10', '')
             break
     result['influencer_score'] = influencer_score
+    return result
+
+def sentiment_analysis(df):
+
+    result = {}
+
+    sentiments = (-1, 0, 1)
+    total = df.sentiment[df.sentiment.isin(sentiments)].count()
+    result['total'] = total
+    is_negative = df.sentiment == -1
+    num = df.sentiment[is_negative].count()
+    result['negative'] = num
+    is_neutral = df.sentiment == 0
+    num = df.sentiment[is_neutral].count()
+    result['neutral'] = num
+    is_positive = df.sentiment == 1
+    num = df.sentiment[is_positive].count()
+    result['positive'] = num
     return result
 
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
