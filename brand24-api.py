@@ -1,14 +1,16 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Version 0.1a5
+# Version 0.1a6
 
 import os
 import time
 from urlparse import urljoin, urlparse
 
 import matplotlib.pyplot as plt
+import plotly
 from bs4 import BeautifulSoup
 from fbi import getpassword
+from iso3166 import countries
 from requestium import Session
 from wordcloud import WordCloud, STOPWORDS
 
@@ -78,6 +80,45 @@ def get_top_mention(s, username, passwd, sid):
     dev = soap.find('div', class_=class_)
     result = parser(dev)
     return result
+
+def location(df):
+
+    # Jupyter
+    #plotly.offline.init_notebook_mode(connected=True)
+
+    mentions = {}
+
+    for i, country in enumerate(countries):
+        is_code = df.country == country.alpha2
+        num = df.country[is_code].count()
+        mentions[i] = {'country': country.name, 'code': country.alpha2,
+                       'mentions': num}
+    out = pd.DataFrame(mentions).T[['country', 'code', 'mentions']] \
+                                .sort_values('country')
+    data = [dict(
+        type = 'choropleth',
+        locations = out.country,
+        locationmode = 'country names',
+        z = out.mentions,
+        autocolorscale = True,
+        reversescale = False,
+        marker = dict(
+            line = dict(
+                color = 'rgb(128, 128, 128)',
+                width = 0.5)),
+        colorbar = dict(
+            title = '# of<br>mentions'))]
+    layout = dict(
+        title = '# of mentions by country',
+        geo = dict(
+            showframe = False,
+            showcoastlines = False,
+            projection = dict(
+                type = 'Miller')))
+    fig = dict(data=data, layout=layout)
+    plotly.offline.plot(fig, validate=False, filename='location.html')
+    # Jupyter
+    #plotly.offline.iplot(fig, validate=False)
 
 def login(s, username, passwd):
     """Login to www.brand24.com with username/passwd pair and return session.
