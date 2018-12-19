@@ -1,14 +1,16 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Version 0.1a4
+# Version 0.1a5
 
 import os
 import time
 from urlparse import urljoin, urlparse
 
+import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from fbi import getpassword
 from requestium import Session
+from wordcloud import WordCloud, STOPWORDS
 
 username = 'info@korniichuk.com'
 passwd = getpassword('~/.key/brand24.enc')
@@ -72,7 +74,6 @@ def get_top_mention(s, username, passwd, sid):
     s.driver.get(url)
     time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
-    # Parse 'text'
     class_ = 'mention most-interactive-entry-from-social-media'
     dev = soap.find('div', class_=class_)
     result = parser(dev)
@@ -157,6 +158,32 @@ def sentiment_analysis(df):
     result['positive'] = num
     return result
 
+def wordcloud(df, background_color='white', output='wordcloud.png'):
+
+    text = ''
+
+    # Prepare 'text' var
+    for i, v in enumerate(df.text):
+        if i != 0:
+            text += ' '
+        text += str(v)
+    # Remove URLs and nicknames
+    # TODO
+    wordcloud = WordCloud(
+        width = 3000,
+        height = 2000,
+        background_color = background_color,
+        stopwords = STOPWORDS).generate(text)
+    fig = plt.figure(
+        figsize = (40, 30),
+        facecolor = background_color,
+        edgecolor = background_color)
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis('off')
+    plt.tight_layout(pad=0)
+    plt.savefig(output)
+    return output
+
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
 # as Python dict
 #mentions = get_top_10_mentions(s, username, passwd, sid)
@@ -171,3 +198,11 @@ def sentiment_analysis(df):
 # Example. Export data from www.brand24.com website as xlsx file (Excel) to
 # '/tmp' directory
 #download_xlsx(s, username, passwd, sid, download_path='/tmp')
+
+# Example. Create wordcloud with default white background and save as
+# wordcloud.png file
+#wordcloud(df)
+
+# Example. Create wordcloud with black background and save as
+# example.png file
+#wordcloud(df, background_color='black', output='example.png')
