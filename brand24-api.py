@@ -1,21 +1,23 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a7
+# Version 0.1a8
 
 import os
 import time
-from urlparse import urljoin, urlparse
+from configparser import RawConfigParser
+from urllib.parse import urljoin, urlparse
 
 import matplotlib.pyplot as plt
 import plotly
 from bs4 import BeautifulSoup
-from fbi import getpassword
 from iso3166 import countries
 from requestium import Session
 from wordcloud import WordCloud, STOPWORDS
 
-username = 'info@korniichuk.com'
-passwd = getpassword('~/.key/brand24.enc')
+from comprehend import get_language
+
+username = 'name.surname@example.com'
+passwd = 'password'
 sid = '250201232'
 
 driver = '/usr/lib/chromium-browser/chromedriver'
@@ -255,18 +257,18 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
 # Example. Get top hashtags from www.brand24.com website as Python list
 #hashtags = get_top_hashtags(s, username, passwd, sid)
 
-# Example. Create choropleth map and save as location.html file
-#location(df)
-
-# Example. Create choropleth map and save as example.html file
-#location(df, output='example.html')
-
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
 # as Python dict
 #mentions = get_top_10_mentions(s, username, passwd, sid)
 
 # Example. Get top mention from www.brand24.com website as Python dict
 #mention = get_top_mention(s, username, passwd, sid)
+
+# Example. Create choropleth map and save as location.html file
+#location(df)
+
+# Example. Create choropleth map and save as example.html file
+#location(df, output='example.html')
 
 # Example. Create wordcloud with default white background and save as
 # wordcloud.png file
