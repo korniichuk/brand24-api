@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# Version 0.1a6
+# Version 0.1a7
 
 import os
 import time
@@ -52,6 +52,24 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
     s.driver.ensure_element_by_id('results_download').click()
     return s
 
+def get_top_hashtags(s, username, passwd, sid):
+
+    result = []
+
+    s = login(s, username, passwd)
+    url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
+    s.driver.get(url)
+    time.sleep(5)
+    soap = BeautifulSoup(s.driver.page_source, 'lxml')
+    divs = soap.find('div', class_='trending-hashtags__column-box') \
+               .find_all('div', class_='trending-hashtags-entry sources_entry')
+    for div in divs:
+        hashtag = div.a.text.strip()
+        mentions = div.find('strong', class_="sources_entry-list-value") \
+                      .text.strip()
+        result.append({'hashtag': hashtag, 'mentions': mentions})
+    return result
+
 def get_top_10_mentions(s, username, passwd, sid):
 
     result = []
@@ -81,7 +99,7 @@ def get_top_mention(s, username, passwd, sid):
     result = parser(dev)
     return result
 
-def location(df):
+def location(df, output='location.html'):
 
     # Jupyter
     #plotly.offline.init_notebook_mode(connected=True)
@@ -116,9 +134,10 @@ def location(df):
             projection = dict(
                 type = 'Miller')))
     fig = dict(data=data, layout=layout)
-    plotly.offline.plot(fig, validate=False, filename='location.html')
+    plotly.offline.plot(fig, validate=False, filename=output)
     # Jupyter
     #plotly.offline.iplot(fig, validate=False)
+    return output
 
 def login(s, username, passwd):
     """Login to www.brand24.com with username/passwd pair and return session.
@@ -225,13 +244,6 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
     plt.savefig(output)
     return output
 
-# Example. Get top 10 mentions by influencer score from www.brand24.com website
-# as Python dict
-#mentions = get_top_10_mentions(s, username, passwd, sid)
-
-# Example. Get top mention from www.brand24.com website as Python dict
-#mention = get_top_mention(s, username, passwd, sid)
-
 # Example. Export data from www.brand24.com website as xlsx file (Excel) to
 # current directory
 #download_xlsx(s, username, passwd, sid)
@@ -239,6 +251,22 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
 # Example. Export data from www.brand24.com website as xlsx file (Excel) to
 # '/tmp' directory
 #download_xlsx(s, username, passwd, sid, download_path='/tmp')
+
+# Example. Get top hashtags from www.brand24.com website as Python list
+#hashtags = get_top_hashtags(s, username, passwd, sid)
+
+# Example. Create choropleth map and save as location.html file
+#location(df)
+
+# Example. Create choropleth map and save as example.html file
+#location(df, output='example.html')
+
+# Example. Get top 10 mentions by influencer score from www.brand24.com website
+# as Python dict
+#mentions = get_top_10_mentions(s, username, passwd, sid)
+
+# Example. Get top mention from www.brand24.com website as Python dict
+#mention = get_top_mention(s, username, passwd, sid)
 
 # Example. Create wordcloud with default white background and save as
 # wordcloud.png file
