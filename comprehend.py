@@ -25,7 +25,7 @@ def get_language(text, language_codes=None):
     try:
         r = comprehend.detect_dominant_language(Text=text)
     except Exception as exception:
-        return 1
+        return language
     languages = r['Languages']
     language_dict = sorted(languages, key=itemgetter('Score'), reverse=True)[0]
     language_code = language_dict['LanguageCode']

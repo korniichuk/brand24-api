@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a8
+# Version 0.1a9
 
 import os
 import time
@@ -99,6 +99,26 @@ def get_top_mention(s, username, passwd, sid):
     class_ = 'mention most-interactive-entry-from-social-media'
     dev = soap.find('div', class_=class_)
     result = parser(dev)
+    return result
+
+def language_analysis(df):
+
+    def detector(value):
+        language = get_language(value, language_codes)
+        return language
+
+    result = {}
+
+    language_codes = RawConfigParser()
+    language_codes.read('language_codes.cfg')
+    df['language'] = df.text.map(detector)
+    languages = df.language[df.language.notna()].unique()
+    total = df.language[df.language.notna()].count()
+    result['total'] = total
+    for language in languages:
+        is_language = df.language == language
+        num = df.language[is_language].count()
+        result[language] = num
     return result
 
 def location(df, output='location.html'):
