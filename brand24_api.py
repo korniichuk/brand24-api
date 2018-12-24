@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a12
+# Version 0.1a13
 
 import os
 import time
@@ -69,7 +69,7 @@ def find_excel(keyword, dir_abs_path='.'):
     result = sorted(results)[-1]
     return result
 
-def get_top_hashtags(s, username, passwd, sid):
+def get_top_10_hashtags(s, username, passwd, sid):
 
     result = []
 
@@ -315,8 +315,8 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
 # '/tmp' directory
 #download_xlsx(s, username, passwd, sid, download_path='/tmp')
 
-# Example. Get top hashtags from www.brand24.com website as Python list
-#hashtags = get_top_hashtags(s, username, passwd, sid)
+# Example. Get top 10 hashtags from www.brand24.com website as Python list
+#hashtags = get_top_10_hashtags(s, username, passwd, sid)
 
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
 # as Python dict and create Plot.ly table
