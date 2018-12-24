@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a9
+# Version 0.1a10
 
 import os
 import time
 from configparser import RawConfigParser
+from os import getcwd, walk
 from urllib.parse import urljoin, urlparse
 
 import matplotlib.pyplot as plt
@@ -53,6 +54,19 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
     s.driver.get(url)
     s.driver.ensure_element_by_id('results_download').click()
     return s
+
+def find_excel(dir_abs_path='.'):
+
+    results = []
+
+    if dir_abs_path == '.':
+        dir_abs_path = getcwd()
+    for (dirpath, dirnames, filenames) in walk(dir_abs_path):
+        for filename in filenames:
+            if filename.startswith('postnord_report'):
+                results.append(filename)
+    result = sorted(results)[-1]
+    return result
 
 def get_top_hashtags(s, username, passwd, sid):
 
