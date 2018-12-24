@@ -140,24 +140,24 @@ def get_top_mention(s, username, passwd, sid):
     result = parser(dev)
     return result
 
-def language_analysis(df):
+def language(df):
 
     def detector(value):
-        language = get_language(value, language_codes)
-        return language
+        lang = get_language(value, language_codes)
+        return lang
 
     result = {}
 
     language_codes = RawConfigParser()
     language_codes.read('language_codes.cfg')
     df['language'] = df.text.map(detector)
-    languages = df.language[df.language.notna()].unique()
+    langs = df.language[df.language.notna()].unique()
     total = df.language[df.language.notna()].count()
     result['total'] = total
-    for language in languages:
-        is_language = df.language == language
-        num = df.language[is_language].count()
-        result[language] = num
+    for lang in langs:
+        is_lang = df.language == lang
+        num = df.language[is_lang].count()
+        result[lang] = num
     return result
 
 def location(df, mode='default', output='location.html'):
