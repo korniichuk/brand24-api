@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a15
+# Version 0.1a16
 
 import os
 import time
@@ -87,7 +87,8 @@ def find_excel(keyword, dir_abs_path='.'):
     result = sorted(results)[-1]
     return result
 
-def get_top_10_hashtags(s, username, passwd, sid):
+def get_top_10_hashtags(s, username, passwd, sid, mode='default',
+                        output='hashtags.html'):
 
     result = []
 
@@ -102,6 +103,29 @@ def get_top_10_hashtags(s, username, passwd, sid):
         mentions = div.find('strong', class_="sources_entry-list-value") \
                       .text.strip()
         result.append({'hashtag': hashtag, 'mentions': mentions})
+    # Plot.ly
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.init_notebook_mode(connected=True)
+    df =  pd.DataFrame(result)
+    columns = ['hashtag', 'mentions']
+    trace = plotly.graph_objs.Table(
+        header = dict(values = columns,
+                   font = dict(color='white'),
+                   fill = dict(color='#00a0d6'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5),
+        cells=dict(values=[df.hashtag, df.mentions],
+                   font=dict(color='#1e1e1e'),
+                   fill = dict(color='white'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5))
+    data = [trace]
+    plotly.offline.plot(data, validate=False, filename=output)
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.iplot(data, validate=False)
+    print(output)
     return result
 
 def get_top_10_mentions(s, username, passwd, sid, mode='default',
@@ -121,8 +145,8 @@ def get_top_10_mentions(s, username, passwd, sid, mode='default',
     if mode == 'jupyter':
         # Jupyter
         plotly.offline.init_notebook_mode(connected=True)
-    columns = ['title', 'text', 'source', 'date', 'time']
     df =  pd.DataFrame(result)
+    columns = ['title', 'text', 'source', 'date', 'time']
     trace = plotly.graph_objs.Table(
         header = dict(values = columns,
                    font = dict(color='white'),
@@ -329,7 +353,8 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
 # '/tmp' directory
 #download_xlsx(s, username, passwd, sid, download_path='/tmp')
 
-# Example. Get top 10 hashtags from www.brand24.com website as Python list
+# Example. Get top 10 hashtags from www.brand24.com website as Python list and
+# create Plot.ly table
 #hashtags = get_top_10_hashtags(s, username, passwd, sid)
 
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
