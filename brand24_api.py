@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a14
+# Version 0.1a15
 
 import os
 import time
@@ -27,6 +27,25 @@ s = Session(webdriver_path=driver,
             browser='chrome',
             default_timeout=15,
             webdriver_options={'arguments': ['headless']})
+
+def clean(df):
+
+    # Rename column names
+    df = df.rename(columns={
+        'ID': 'id', 'Date': 'date', 'Hrs': 'time', 'Title': 'title',
+        'Content': 'text', 'Author' : 'author', 'Source': 'url',
+        'Domain': 'source', 'Category': 'category', 'Country': 'country',
+        'Sentiment': 'sentiment', 'Followers Count': 'followers',
+        'Social Media Reach': 'reach', 'Likes': 'likes', 'Dislikes': 'dislikes',
+        'Shares': 'shares', 'Comments': 'comments'})
+    # Select important columns
+    full_columns_list = ['title', 'text', 'source', 'country', 'sentiment']
+    columns_list = []
+    for column in full_columns_list:
+        if column in df.columns:
+            columns_list.append(column)
+    df = df[columns_list]
+    return df
 
 def download_xlsx(s, username, passwd, sid, download_path=None):
     """Export data from www.brand24.com website as xlsx file (Excel) to
