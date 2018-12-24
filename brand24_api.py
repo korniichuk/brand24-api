@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a13
+# Version 0.1a14
 
 import os
 import time
@@ -43,7 +43,6 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
         s -- Requestium session (type: requestium.requestium.Session).
     """
 
-    s = login(s, username, passwd)
     s.driver.command_executor._commands['send_command'] = ('POST',
             '/session/$sessionId/chromium/send_command')
     if download_path == None:
@@ -73,7 +72,6 @@ def get_top_10_hashtags(s, username, passwd, sid):
 
     result = []
 
-    s = login(s, username, passwd)
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     s.driver.get(url)
     time.sleep(5)
@@ -92,7 +90,6 @@ def get_top_10_mentions(s, username, passwd, sid, mode='default',
 
     result = []
 
-    s = login(s, username, passwd)
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     s.driver.get(url)
     time.sleep(5)
@@ -130,7 +127,6 @@ def get_top_mention(s, username, passwd, sid):
 
     result = {}
 
-    s = login(s, username, passwd)
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     s.driver.get(url)
     time.sleep(5)
@@ -219,7 +215,6 @@ def login(s, username, passwd):
     s.driver.ensure_element_by_name('login').send_keys(username)
     s.driver.ensure_element_by_name('password').send_keys(passwd)
     s.driver.ensure_element_by_id('login_button').click()
-    time.sleep(5)
     return s
 
 def parser(soap):
