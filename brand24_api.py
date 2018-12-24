@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a11
+# Version 0.1a12
 
 import os
 import time
@@ -9,6 +9,7 @@ from os import getcwd, walk
 from urllib.parse import urljoin, urlparse
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import plotly
 from bs4 import BeautifulSoup
 from iso3166 import countries
@@ -86,7 +87,8 @@ def get_top_hashtags(s, username, passwd, sid):
         result.append({'hashtag': hashtag, 'mentions': mentions})
     return result
 
-def get_top_10_mentions(s, username, passwd, sid):
+def get_top_10_mentions(s, username, passwd, sid, mode='default',
+                        output='mentions.html'):
 
     result = []
 
@@ -99,6 +101,29 @@ def get_top_10_mentions(s, username, passwd, sid):
     divs = soap.find_all('div', class_=class_)
     for div in divs:
          result.append(parser(div))
+    # Plot.ly
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.init_notebook_mode(connected=True)
+    columns = ['title', 'text', 'source', 'date', 'time']
+    df =  pd.DataFrame(result)
+    trace = plotly.graph_objs.Table(
+        header = dict(values = columns,
+                   font = dict(color='white'),
+                   fill = dict(color='#00a0d6'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5),
+        cells=dict(values=[df.title, df.text, df.source, df.date, df.time],
+                   font=dict(color='#1e1e1e'),
+                   fill = dict(color='white'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5))
+    data = [trace]
+    plotly.offline.plot(data, validate=False, filename=output)
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.iplot(data, validate=False)
+    print(output)
     return result
 
 def get_top_mention(s, username, passwd, sid):
@@ -137,8 +162,8 @@ def language_analysis(df):
 
 def location(df, mode='default', output='location.html'):
 
-    # Jupyter
     if mode == 'jupyter':
+        # Jupyter
         plotly.offline.init_notebook_mode(connected=True)
 
     mentions = {}
@@ -172,8 +197,8 @@ def location(df, mode='default', output='location.html'):
                 type = 'Miller')))
     fig = dict(data=data, layout=layout)
     plotly.offline.plot(fig, validate=False, filename=output)
-    # Jupyter
     if mode == 'jupyter':
+        # Jupyter
         plotly.offline.iplot(fig, validate=False)
     return output
 
@@ -294,7 +319,7 @@ def wordcloud(df, background_color='white', output='wordcloud.png'):
 #hashtags = get_top_hashtags(s, username, passwd, sid)
 
 # Example. Get top 10 mentions by influencer score from www.brand24.com website
-# as Python dict
+# as Python dict and create Plot.ly table
 #mentions = get_top_10_mentions(s, username, passwd, sid)
 
 # Example. Get top mention from www.brand24.com website as Python dict
