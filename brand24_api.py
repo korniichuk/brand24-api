@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a10
+# Version 0.1a11
 
 import os
 import time
@@ -55,7 +55,7 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
     s.driver.ensure_element_by_id('results_download').click()
     return s
 
-def find_excel(dir_abs_path='.'):
+def find_excel(keyword, dir_abs_path='.'):
 
     results = []
 
@@ -63,7 +63,7 @@ def find_excel(dir_abs_path='.'):
         dir_abs_path = getcwd()
     for (dirpath, dirnames, filenames) in walk(dir_abs_path):
         for filename in filenames:
-            if filename.startswith('postnord_report'):
+            if filename.startswith(keyword):
                 results.append(filename)
     result = sorted(results)[-1]
     return result
@@ -135,10 +135,11 @@ def language_analysis(df):
         result[language] = num
     return result
 
-def location(df, output='location.html'):
+def location(df, mode='default', output='location.html'):
 
     # Jupyter
-    #plotly.offline.init_notebook_mode(connected=True)
+    if mode == 'jupyter':
+        plotly.offline.init_notebook_mode(connected=True)
 
     mentions = {}
 
@@ -161,7 +162,7 @@ def location(df, output='location.html'):
                 color = 'rgb(128, 128, 128)',
                 width = 0.5)),
         colorbar = dict(
-            title = '# of<br>mentions'))]
+            title = ''))]
     layout = dict(
         title = '# of mentions by country',
         geo = dict(
@@ -172,7 +173,8 @@ def location(df, output='location.html'):
     fig = dict(data=data, layout=layout)
     plotly.offline.plot(fig, validate=False, filename=output)
     # Jupyter
-    #plotly.offline.iplot(fig, validate=False)
+    if mode == 'jupyter':
+        plotly.offline.iplot(fig, validate=False)
     return output
 
 def login(s, username, passwd):
