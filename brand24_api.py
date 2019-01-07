@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a17
+# Version 0.1a19
 
 import os
 import time
@@ -185,18 +185,17 @@ def language(df):
         lang = get_language(value, language_codes)
         return lang
 
-    result = {}
-
     language_codes = RawConfigParser()
     language_codes.read('language_codes.cfg')
     df['language'] = df.text.map(detector)
     langs = df.language[df.language.notna()].unique()
-    total = df.language[df.language.notna()].count()
-    result['total'] = total
-    for lang in langs:
+    tmp ={}
+    for i, lang in enumerate(langs):
         is_lang = df.language == lang
         num = df.language[is_lang].count()
-        result[lang] = num
+        tmp[i] = {'language': lang, 'mentions': num}
+    result = pd.DataFrame(tmp).T[['language', 'mentions']] \
+               .sort_values('mentions', ascending=False)
     return result
 
 def location(df, mode='default', output='location.html'):
