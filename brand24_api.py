@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a16
+# Version 0.1a17
 
 import os
 import time
@@ -26,7 +26,7 @@ driver = '/usr/lib/chromium-browser/chromedriver'
 s = Session(webdriver_path=driver,
             browser='chrome',
             default_timeout=15,
-            webdriver_options={'arguments': ['headless']})
+            webdriver_options={'arguments': ['headless', 'no-sandbox']})
 
 def clean(df):
 
