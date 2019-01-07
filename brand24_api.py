@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a19
+# Version 0.1a20
 
 import os
 import time
@@ -115,8 +115,8 @@ def get_top_10_hashtags(s, username, passwd, sid, mode='default',
                    fill = dict(color='#00a0d6'),
                    line = dict(color='white'),
                    align = ['left'] * 5),
-        cells=dict(values=[df.hashtag, df.mentions],
-                   font=dict(color='#1e1e1e'),
+        cells=dict(values = [df.hashtag, df.mentions],
+                   font = dict(color='#1e1e1e'),
                    fill = dict(color='white'),
                    line = dict(color='white'),
                    align = ['left'] * 5))
@@ -153,8 +153,8 @@ def get_top_10_mentions(s, username, passwd, sid, mode='default',
                    fill = dict(color='#00a0d6'),
                    line = dict(color='white'),
                    align = ['left'] * 5),
-        cells=dict(values=[df.title, df.text, df.source, df.date, df.time],
-                   font=dict(color='#1e1e1e'),
+        cells=dict(values = [df.title, df.text, df.source, df.date, df.time],
+                   font = dict(color='#1e1e1e'),
                    fill = dict(color='white'),
                    line = dict(color='white'),
                    align = ['left'] * 5))
@@ -179,7 +179,7 @@ def get_top_mention(s, username, passwd, sid):
     result = parser(dev)
     return result
 
-def language(df):
+def language(df, mode='default', output='language.html'):
 
     def detector(value):
         lang = get_language(value, language_codes)
@@ -196,6 +196,28 @@ def language(df):
         tmp[i] = {'language': lang, 'mentions': num}
     result = pd.DataFrame(tmp).T[['language', 'mentions']] \
                .sort_values('mentions', ascending=False)
+    # Plot.ly
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.init_notebook_mode(connected=True)
+    columns = ['language', 'mentions']
+    trace = plotly.graph_objs.Table(
+        header = dict(values = columns,
+                   font = dict(color='white'),
+                   fill = dict(color='#00a0d6'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5),
+        cells=dict(values = [result.language, result.mentions],
+                   font = dict(color='#1e1e1e'),
+                   fill = dict(color='white'),
+                   line = dict(color='white'),
+                   align = ['left'] * 5))
+    data = [trace]
+    plotly.offline.plot(data, validate=False, filename=output)
+    if mode == 'jupyter':
+        # Jupyter
+        plotly.offline.iplot(data, validate=False)
+    print(output)
     return result
 
 def location(df, mode='default', output='location.html'):
