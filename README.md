@@ -20,3 +20,8 @@ Next, install Python packages:
 ```
 $ sudo pip install -r requirements.txt
 ```
+
+Finally, [configuring the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html):
+```
+$ aws configure
+```

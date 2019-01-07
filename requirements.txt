@@ -1,3 +1,4 @@
+awscli==1.16.84
 beautifulsoup4==4.7.1
 boto3==1.9.74
 iso3166==0.9
