@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a2
+# Version 0.1a3
 
 import re
+from collections import Counter
 
 import dash
 import dash_core_components as dcc
@@ -15,6 +16,33 @@ import plotly.graph_objs as go
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 df = pd.read_pickle('brand24.pkl')
+
+def hashtags(df):
+
+    result = []
+    for i, v in enumerate(df.text[df.text.notna()]):
+        hashtags = re.findall(r'\B#\w*[a-zA-Z]+\w*', v)
+        hashtags = list(set(hashtags))
+        result.extend(hashtags)
+    tmp = pd.DataFrame.from_dict(Counter(result), orient='index').reset_index()
+    tmp = tmp.rename(columns={'index':'hashtag', 0:'mentions'})
+    tmp = tmp.sort_values('mentions', ascending=False)
+    data = [go.Table(
+        header = dict(
+            values = ['hashtag', 'mentions'],
+            fill = dict(color='#00a0d6'),
+            font = dict(color='white'),
+            line = dict(color='white'),
+            align = ['left'] * 5),
+        cells=dict(values = [tmp.hashtag, tmp.mentions],
+            fill = dict(color='white'),
+            font = dict(color='#1e1e1e'),
+            line = dict(color='white'),
+            align = ['left'] * 5))]
+    layout = dict(
+        title = '# of mentions by hashtag')
+    return dcc.Graph(
+        figure=go.Figure(data=data, layout=layout), id='hashtags')
 
 def language(df):
 
@@ -104,10 +132,12 @@ app.layout = html.Div(children=[
     html.H3('Brand Monitoring', style={'textAlign': 'center'}),
     html.Div(children=[
         location(df),
-        sentiment(df),
-        language(df)
-    ], style={'columnCount': 1}
-    )
+        language(df),
+        sentiment(df)
+    ], style={'columnCount': 3}),
+    html.Div(children=[
+        hashtags(df)
+    ], style={'columnCount': 1})
 ])
 
 if __name__ == '__main__':
