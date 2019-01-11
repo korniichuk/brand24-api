@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a1
+# Version 0.1a2
+
+import re
 
 import dash
 import dash_core_components as dcc
+import dash_daq as daq
 import dash_html_components as html
 import iso3166
 import pandas as pd
@@ -25,13 +28,13 @@ def language(df):
     data = [go.Table(
         header = dict(
             values = ['language', 'mentions'],
-            font = dict(color='white'),
             fill = dict(color='#00a0d6'),
+            font = dict(color='white'),
             line = dict(color='white'),
             align = ['left'] * 5),
         cells=dict(values = [tmp.language, tmp.mentions],
-            font = dict(color='#1e1e1e'),
             fill = dict(color='white'),
+            font = dict(color='#1e1e1e'),
             line = dict(color='white'),
             align = ['left'] * 5))]
     layout = dict(
@@ -53,14 +56,23 @@ def location(df):
         locations = tmp.country,
         locationmode = 'country names',
         z = tmp.mentions,
-        autocolorscale = True,
+        colorscale = [[0, 'white'], [1, '#00a0d6']],
         reversescale = False,
         marker = dict(
             line = dict(
-                color = 'rgb(128, 128, 128)',
+                color = '#757575',
                 width = 0.5)),
         colorbar = dict(
-            title = ''))]
+            title = '',
+            thickness = 15,
+            outlinewidth = 0,
+            tickfont = dict(
+                color = '#1e1e1e')),
+        hoverlabel = dict(
+            bgcolor = '#00a0d6',
+            bordercolor = 'white',
+            font = dict(
+                color = 'white')))]
     layout = dict(
         title = '# of mentions by country',
         geo = dict(
@@ -71,14 +83,30 @@ def location(df):
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='location')
 
+def sentiment(df):
+
+    value = df.sentiment[df.sentiment != 0].mean()
+    value = round(value, 1)
+    value = float("%.1f" % value)
+    return daq.Gauge(
+        min=-1,
+        max=1,
+        value=value,
+        showCurrentValue=True,
+        scale={'start': -1, 'interval': 0.5, 'labelInterval': 0.5},
+        color='#00a0d6',
+        label='sentiment analysis',
+        id = 'sentiment')
+
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     html.H3('Brand Monitoring', style={'textAlign': 'center'}),
     html.Div(children=[
         location(df),
+        sentiment(df),
         language(df)
-    ], style={'columnCount': 2}
+    ], style={'columnCount': 1}
     )
 ])
 
