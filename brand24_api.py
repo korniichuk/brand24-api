@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a21
+# Version 0.1a22
 
 import os
 import time
@@ -38,8 +38,17 @@ def clean(df):
         'Sentiment': 'sentiment', 'Followers Count': 'followers',
         'Social Media Reach': 'reach', 'Likes': 'likes', 'Dislikes': 'dislikes',
         'Shares': 'shares', 'Comments': 'comments'})
+    # Remove columns with NaN values
+    df = df.dropna(axis=1, how="all")
+    # Remove rows with NaN values
+    df = df.dropna(axis=0, how="all")
+    # Remove 'trial' row
+    text = 'This is a trial version. Upgrade to access full data and reports.'
+    df = df[df.id != text]
     # Select important columns
-    full_columns_list = ['title', 'text', 'source', 'country', 'sentiment']
+    full_columns_list = [
+            'title', 'text', 'source', 'country', 'sentiment', 'followers',
+            'reach', 'likes', 'dislikes', 'shares', 'comments']
     columns_list = []
     for column in full_columns_list:
         if column in df.columns:
