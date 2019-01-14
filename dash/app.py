@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a3
+# Version 0.1a4
 
 import re
 from collections import Counter
@@ -12,6 +12,7 @@ import dash_html_components as html
 import iso3166
 import pandas as pd
 import plotly.graph_objs as go
+from sklearn import preprocessing
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -111,6 +112,39 @@ def location(df):
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='location')
 
+def mentions(df):
+
+    # Normalize
+    tmp = df.fillna(0)
+    columns = ['reach', 'followers',  'shares', 'likes', 'dislikes', 'comments']
+    x = tmp[columns].values # returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    tmp[columns] = pd.DataFrame(x_scaled)
+
+    # Calcl impact score of mentions
+    tmp['impact'] = (tmp.reach + tmp.followers) * 0.3 + \
+                    tmp.sentiment.abs() * 0.24 + tmp.shares * 0.1 + \
+                    (tmp.likes + tmp.dislikes + tmp.comments) * 0.02
+
+    tmp = tmp.sort_values('impact', ascending=False)
+    data = [go.Table(
+        header = dict(
+            values = ['title', 'text', 'source', 'date'],
+            fill = dict(color='#00a0d6'),
+            font = dict(color='white'),
+            line = dict(color='white'),
+            align = ['left'] * 5),
+        cells=dict(values = [tmp.title, tmp.text, tmp.source, tmp.date],
+            fill = dict(color='white'),
+            font = dict(color='#1e1e1e'),
+            line = dict(color='white'),
+            align = ['left'] * 5))]
+    layout = dict(
+        title = 'top mentions')
+    return dcc.Graph(
+        figure=go.Figure(data=data, layout=layout), id='mentions')
+
 def sentiment(df):
 
     value = df.sentiment[df.sentiment != 0].mean()
@@ -136,8 +170,9 @@ app.layout = html.Div(children=[
         sentiment(df)
     ], style={'columnCount': 3}),
     html.Div(children=[
-        hashtags(df)
-    ], style={'columnCount': 1})
+        hashtags(df),
+        mentions(df)
+    ], style={'columnCount': 2})
 ])
 
 if __name__ == '__main__':
