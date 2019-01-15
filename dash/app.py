@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a4
+# Version 0.1a5
 
 import re
 from collections import Counter
@@ -13,8 +13,6 @@ import iso3166
 import pandas as pd
 import plotly.graph_objs as go
 from sklearn import preprocessing
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 df = pd.read_pickle('brand24.pkl')
 
@@ -160,16 +158,17 @@ def sentiment(df):
         label='sentiment analysis',
         id = 'sentiment')
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
-app.layout = html.Div(children=[
-    html.H3('Brand Monitoring', style={'textAlign': 'center'}),
-    html.Div(children=[
+app.layout = html.Div([
+    html.H3('Brand Monitoring', style={'textAlign': 'center',
+                                       'color': '#1e1e1e'}, id='header'),
+    html.Div([
         location(df),
         language(df),
         sentiment(df)
     ], style={'columnCount': 3}),
-    html.Div(children=[
+    html.Div([
         hashtags(df),
         mentions(df)
     ], style={'columnCount': 2})
