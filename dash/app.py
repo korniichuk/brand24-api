@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a5
+# Version 0.1a6
 
 import re
 from collections import Counter
@@ -156,13 +156,13 @@ def sentiment(df):
         scale={'start': -1, 'interval': 0.5, 'labelInterval': 0.5},
         color='#00a0d6',
         label='sentiment analysis',
+        labelPosition = 'bottom',
         id = 'sentiment')
 
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    html.H3('Brand Monitoring', style={'textAlign': 'center',
-                                       'color': '#1e1e1e'}, id='header'),
+    html.H3('Brand Monitoring', style={'textAlign': 'center'}, id='header'),
     html.Div([
         location(df),
         language(df),
