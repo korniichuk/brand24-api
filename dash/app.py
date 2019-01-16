@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a8
+# Version 0.1a9
 
 import re
 from collections import Counter
@@ -16,7 +16,7 @@ from sklearn import preprocessing
 
 df = pd.read_pickle('brand24.pkl')
 
-def hashtags(df):
+def hashtags(df, limit=10):
 
     result = []
     for i, v in enumerate(df.text[df.text.notna()]):
@@ -25,7 +25,7 @@ def hashtags(df):
         result.extend(hashtags)
     tmp = pd.DataFrame.from_dict(Counter(result), orient='index').reset_index()
     tmp = tmp.rename(columns={'index':'hashtag', 0:'mentions'})
-    tmp = tmp.sort_values('mentions', ascending=False)
+    tmp = tmp.sort_values('mentions', ascending=False).head(limit)
     data = [go.Table(
         header = dict(
             values = ['hashtag', 'mentions'],
@@ -39,7 +39,7 @@ def hashtags(df):
             line = dict(color='white'),
             align = ['left'] * 5))]
     layout = dict(
-        title = '# of mentions by hashtag')
+        title = 'top %s hashtags' % limit)
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='hashtags')
 
@@ -111,7 +111,7 @@ def location(df):
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='location')
 
-def mentions(df):
+def mentions(df, limit=10):
 
     # Normalize
     tmp = df.fillna(0)
@@ -126,7 +126,7 @@ def mentions(df):
                     tmp.sentiment.abs() * 0.24 + tmp.shares * 0.1 + \
                     (tmp.likes + tmp.dislikes + tmp.comments) * 0.02
 
-    tmp = tmp.sort_values('impact', ascending=False).head(10)
+    tmp = tmp.sort_values('impact', ascending=False).head(limit)
     data = [go.Table(
         header = dict(
             values = ['title', 'text', 'source', 'date'],
@@ -140,7 +140,7 @@ def mentions(df):
             line = dict(color='white'),
             align = ['left'] * 5))]
     layout = dict(
-        title = 'top 10 mentions')
+        title = 'top %s mentions' % limit)
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='mentions')
 
