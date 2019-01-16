@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a6
+# Version 0.1a7
 
 import re
 from collections import Counter
@@ -92,6 +92,7 @@ def location(df):
         colorbar = dict(
             title = '',
             thickness = 15,
+            len = 0.872,
             outlinewidth = 0,
             tickfont = dict(
                 color = '#1e1e1e')),
@@ -155,23 +156,35 @@ def sentiment(df):
         showCurrentValue=True,
         scale={'start': -1, 'interval': 0.5, 'labelInterval': 0.5},
         color='#00a0d6',
-        label='sentiment analysis',
-        labelPosition = 'bottom',
-        id = 'sentiment')
+        label=' ',
+        size = 200,
+        id='sentiment')
 
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
     html.H3('Brand Monitoring', style={'textAlign': 'center'}, id='header'),
     html.Div([
-        location(df),
-        language(df),
-        sentiment(df)
-    ], style={'columnCount': 3}),
+        html.Div([
+            location(df),
+            language(df),
+        ], style={'columnCount': 2, 'width': '66.7%', 'float': 'left'}),
+        html.Div([
+            html.Br(style={'lineHeight': '200%'}),
+            html.Div('sentiment analysis',
+                     style={'textAlign': 'center', 'fontSize': '17px'}),
+            html.Br(style={'lineHeight': '350%'}),
+            sentiment(df)
+        ], style={'width': '33.3%', 'float': 'left'})
+    ]),
     html.Div([
-        hashtags(df),
-        mentions(df)
-    ], style={'columnCount': 2})
+        html.Div([
+            mentions(df)
+        ], style={'width': '66.7%', 'float': 'left'}),
+        html.Div([
+            hashtags(df)
+        ], style={'width': '33.3%', 'float': 'left'}),
+    ])
 ])
 
 if __name__ == '__main__':
