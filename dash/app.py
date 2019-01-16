@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a7
+# Version 0.1a8
 
 import re
 from collections import Counter
@@ -126,7 +126,7 @@ def mentions(df):
                     tmp.sentiment.abs() * 0.24 + tmp.shares * 0.1 + \
                     (tmp.likes + tmp.dislikes + tmp.comments) * 0.02
 
-    tmp = tmp.sort_values('impact', ascending=False)
+    tmp = tmp.sort_values('impact', ascending=False).head(10)
     data = [go.Table(
         header = dict(
             values = ['title', 'text', 'source', 'date'],
@@ -140,7 +140,7 @@ def mentions(df):
             line = dict(color='white'),
             align = ['left'] * 5))]
     layout = dict(
-        title = 'top mentions')
+        title = 'top 10 mentions')
     return dcc.Graph(
         figure=go.Figure(data=data, layout=layout), id='mentions')
 
