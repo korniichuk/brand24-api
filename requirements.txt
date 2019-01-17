@@ -1,6 +1,9 @@
 awscli==1.16.84
 beautifulsoup4==4.7.1
 boto3==1.9.74
+dash==0.35.1
+dash-core-components==0.42.1
+dash-html-components==0.13.4
 iso3166==0.9
 matplotlib==3.0.2
 pandas==0.23.4
