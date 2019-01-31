@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a9
+# Version 0.1a10
 
 import re
 from collections import Counter
@@ -161,6 +160,8 @@ def sentiment(df):
         id='sentiment')
 
 app = dash.Dash(__name__)
+app.scripts.config.serve_locally = True
+app.css.config.serve_locally = True
 
 app.layout = html.Div([
     html.H3('Brand Monitoring', style={'textAlign': 'center'}, id='header'),
@@ -187,5 +188,7 @@ app.layout = html.Div([
     ])
 ])
 
+application = app.server
+
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    application.run(debug=True, port=8080)
