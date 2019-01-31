@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Version 0.1a10
+# Version 0.1a11
 
 import re
 from collections import Counter
@@ -45,24 +45,33 @@ def hashtags(df, limit=10):
 def language(df):
 
     langs = df.language[df.language.notna()].unique()
-    result = []
-    for i, lang in enumerate(langs):
-        is_lang = df.language == lang
-        mentions = df.language[is_lang].count()
-        result.append({'language': lang, 'mentions': mentions})
-    tmp = pd.DataFrame(result).sort_values('mentions', ascending=False)
-    data = [go.Table(
-        header = dict(
-            values = ['language', 'mentions'],
-            fill = dict(color='#00a0d6'),
-            font = dict(color='white'),
-            line = dict(color='white'),
-            align = ['left'] * 5),
-        cells=dict(values = [tmp.language, tmp.mentions],
-            fill = dict(color='white'),
-            font = dict(color='#1e1e1e'),
-            line = dict(color='white'),
-            align = ['left'] * 5))]
+    if len(langs) != 0:
+        result = []
+        for i, lang in enumerate(langs):
+            is_lang = df.language == lang
+            mentions = df.language[is_lang].count()
+            result.append({'language': lang, 'mentions': mentions})
+        tmp = pd.DataFrame(result).sort_values('mentions', ascending=False)
+        data = [go.Table(
+            header = dict(
+                values = ['language', 'mentions'],
+                fill = dict(color='#00a0d6'),
+                font = dict(color='white'),
+                line = dict(color='white'),
+                align = ['left'] * 5),
+            cells=dict(values = [tmp.language, tmp.mentions],
+                fill = dict(color='white'),
+                font = dict(color='#1e1e1e'),
+                line = dict(color='white'),
+                align = ['left'] * 5))]
+    else:
+        data = [go.Table(
+            header = dict(
+                values = ['language', 'mentions'],
+                fill = dict(color='#00a0d6'),
+                font = dict(color='white'),
+                line = dict(color='white'),
+                align = ['left'] * 5))]
     layout = dict(
         title = '# of mentions by language')
     return dcc.Graph(
