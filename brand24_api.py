@@ -73,7 +73,7 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
 
     s.driver.command_executor._commands['send_command'] = ('POST',
             '/session/$sessionId/chromium/send_command')
-    if download_path == None:
+    if download_path is None:
         download_path = os.getcwd()
     params = {'cmd': 'Page.setDownloadBehavior',
               'params': {'behavior': 'allow', 'downloadPath': download_path}}
