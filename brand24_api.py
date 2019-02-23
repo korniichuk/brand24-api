@@ -20,7 +20,7 @@ from comprehend import get_language
 
 username = 'name.surname@example.com'
 passwd = 'password'
-sid = '260495096'
+sid = '285903724'
 
 driver = '/usr/lib/chromium-browser/chromedriver'
 s = Session(webdriver_path=driver,
@@ -79,7 +79,8 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
               'params': {'behavior': 'allow', 'downloadPath': download_path}}
     s.driver.execute('send_command', params)
     url = 'https://app.brand24.com/panel/results/?sid=%s' % sid
-    s.driver.get(url)
+    if not s.driver.current_url.startswith(url):
+        s.driver.get(url)
     s.driver.ensure_element_by_id('results_download').click()
     return s
 
@@ -102,8 +103,9 @@ def get_top_10_hashtags(s, username, passwd, sid, mode='default',
     result = []
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
-    s.driver.get(url)
-    time.sleep(5)
+    if not s.driver.current_url.startswith(url):
+        s.driver.get(url)
+        time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     divs = soap.find('div', class_='trending-hashtags__column-box') \
                .find_all('div', class_='trending-hashtags-entry sources_entry')
@@ -142,8 +144,9 @@ def get_top_10_mentions(s, username, passwd, sid, mode='default',
     result = []
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
-    s.driver.get(url)
-    time.sleep(5)
+    if not s.driver.current_url.startswith(url):
+        s.driver.get(url)
+        time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     class_ = 'mention entry-from-most-popular-authors'
     divs = soap.find_all('div', class_=class_)
@@ -178,8 +181,9 @@ def get_top_mention(s, username, passwd, sid):
     result = {}
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
-    s.driver.get(url)
-    time.sleep(5)
+    if not s.driver.current_url.startswith(url):
+        s.driver.get(url)
+        time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     class_ = 'mention most-interactive-entry-from-social-media'
     dev = soap.find('div', class_=class_)
@@ -280,7 +284,8 @@ def login(s, username, passwd):
     """
 
     url = 'https://app.brand24.com/user/login/'
-    s.driver.get(url)
+    if not s.driver.current_url.startswith(url):
+        s.driver.get(url)
     s.driver.ensure_element_by_name('login').send_keys(username)
     s.driver.ensure_element_by_name('password').send_keys(passwd)
     s.driver.ensure_element_by_id('login_button').click()
