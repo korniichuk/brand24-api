@@ -26,7 +26,14 @@ driver = '/usr/lib/chromium-browser/chromedriver'
 s = Session(webdriver_path=driver,
             browser='chrome',
             default_timeout=15,
-            webdriver_options={'arguments': ['headless', 'no-sandbox']})
+            webdriver_options={
+                'arguments': [
+                    'disable-dev-shm-usage',
+                    'headless',
+                    'no-sandbox'
+                ]
+            }
+)
 
 def clean(df):
 
