@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a25
+# Version 0.1a26
 
 import os
 import time
 from configparser import RawConfigParser
-from os import getcwd, walk
 from urllib.parse import urljoin, urlparse
 
 import matplotlib.pyplot as plt
@@ -106,8 +105,8 @@ def find_excel(keyword, dir_abs_path='.'):
     results = []
 
     if dir_abs_path == '.':
-        dir_abs_path = getcwd()
-    for (dirpath, dirnames, filenames) in walk(dir_abs_path):
+        dir_abs_path = os.getcwd()
+    for (dirpath, dirnames, filenames) in os.walk(dir_abs_path):
         for filename in filenames:
             if filename.startswith(keyword):
                 results.append(filename)
