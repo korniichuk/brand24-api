@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a22
+# Version 0.1a23
 
 import os
 import time
@@ -87,8 +87,16 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
     s.driver.execute('send_command', params)
     url = 'https://app.brand24.com/panel/results/?sid=%s' % sid
     if not s.driver.current_url.startswith(url):
-        s.driver.get(url)
-    s.driver.ensure_element_by_id('results_download').click()
+        try:
+            s.driver.get(url)
+            s.driver.ensure_element_by_id('results_download').click()
+        except:
+            s.close()
+    else:
+        try:
+            s.driver.ensure_element_by_id('results_download').click()
+        except:
+            s.close()
     return s
 
 def find_excel(keyword, dir_abs_path='.'):
@@ -292,10 +300,20 @@ def login(s, username, passwd):
 
     url = 'https://app.brand24.com/user/login/'
     if not s.driver.current_url.startswith(url):
-        s.driver.get(url)
-    s.driver.ensure_element_by_name('login').send_keys(username)
-    s.driver.ensure_element_by_name('password').send_keys(passwd)
-    s.driver.ensure_element_by_id('login_button').click()
+        try:
+            s.driver.get(url)
+            s.driver.ensure_element_by_name('login').send_keys(username)
+            s.driver.ensure_element_by_name('password').send_keys(passwd)
+            s.driver.ensure_element_by_id('login_button').click()
+        except:
+            s.close()
+    else:
+        try:
+            s.driver.ensure_element_by_name('login').send_keys(username)
+            s.driver.ensure_element_by_name('password').send_keys(passwd)
+            s.driver.ensure_element_by_id('login_button').click()
+        except:
+            s.close()
     return s
 
 def parser(soap):
