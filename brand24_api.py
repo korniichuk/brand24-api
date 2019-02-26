@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a24
+# Version 0.1a25
 
 import os
 import time
@@ -92,11 +92,13 @@ def download_xlsx(s, username, passwd, sid, download_path=None):
             s.driver.ensure_element_by_id('results_download').click()
         except:
             s.close()
+            return 1
     else:
         try:
             s.driver.ensure_element_by_id('results_download').click()
         except:
             s.close()
+            return 1
     return s
 
 def find_excel(keyword, dir_abs_path='.'):
@@ -322,6 +324,7 @@ def login(s, username, passwd):
             s.driver.ensure_element_by_id('login_button').click()
         except:
             s.close()
+            return 1
     else:
         try:
             s.driver.ensure_element_by_name('login').send_keys(username)
@@ -329,6 +332,7 @@ def login(s, username, passwd):
             s.driver.ensure_element_by_id('login_button').click()
         except:
             s.close()
+            return 1
     return s
 
 def parser(soap):
