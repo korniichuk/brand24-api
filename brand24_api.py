@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Version 0.1a23
+# Version 0.1a24
 
 import os
 import time
@@ -119,8 +119,13 @@ def get_top_10_hashtags(s, username, passwd, sid, mode='default',
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     if not s.driver.current_url.startswith(url):
-        s.driver.get(url)
-        time.sleep(5)
+        try:
+            s.driver.get(url)
+        except:
+            s.close()
+            return 1
+        else:
+            time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     divs = soap.find('div', class_='trending-hashtags__column-box') \
                .find_all('div', class_='trending-hashtags-entry sources_entry')
@@ -160,8 +165,13 @@ def get_top_10_mentions(s, username, passwd, sid, mode='default',
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     if not s.driver.current_url.startswith(url):
-        s.driver.get(url)
-        time.sleep(5)
+        try:
+            s.driver.get(url)
+        except:
+            s.close()
+            return 1
+        else:
+            time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     class_ = 'mention entry-from-most-popular-authors'
     divs = soap.find_all('div', class_=class_)
@@ -197,8 +207,13 @@ def get_top_mention(s, username, passwd, sid):
 
     url = 'https://app.brand24.com/panel/analysis/?sid=%s' % sid
     if not s.driver.current_url.startswith(url):
-        s.driver.get(url)
-        time.sleep(5)
+        try:
+            s.driver.get(url)
+        except:
+            s.close()
+            return 1
+        else:
+            time.sleep(5)
     soap = BeautifulSoup(s.driver.page_source, 'lxml')
     class_ = 'mention most-interactive-entry-from-social-media'
     dev = soap.find('div', class_=class_)
