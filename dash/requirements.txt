@@ -1,7 +1,5 @@
-dash==0.35.1
-dash-core-components==0.42.1
-dash-daq==0.0.6
-dash-html-components==0.13.4
+dash==0.39.0
+dash-daq==0.1.0
 iso3166==0.9
 pandas==0.23.4
 scikit-learn==0.20.2
